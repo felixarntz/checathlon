@@ -532,6 +532,21 @@ function checathlon_hide_header_image() {
 }
 
 /**
+ * Filter to add a pagination reference point attribute for amp-live-list when theme supports AMP.
+ *
+ * This is used by the navigation_markup_template filter in the comments template.
+ *
+ * @access private
+ * @link https://www.ampproject.org/docs/reference/components/amp-live-list#pagination
+ *
+ * @param string $markup Navigation markup.
+ * @return string Filtered markup.
+ */
+function checathlon_filter_add_amp_live_list_pagination_attribute( string $markup ) : string {
+	return preg_replace( '/(\s*<[a-z0-9_-]+)/i', '$1 pagination ', $markup, 1 );
+}
+
+/**
  * Returns true if a blog has more than 1 category.
  *
  * @return bool

@@ -39,13 +39,25 @@ if ( post_password_required() ) {
 			</h2>
 
 			<?php
+				if ( checathlon_is_amp() ) {
+					?>
+					<amp-live-list
+						id="amp-live-comments-list-<?php the_ID(); ?>"
+						<?php echo ( 'asc' === get_option( 'comment_order' ) ) ? ' sort="ascending" ' : ''; ?>
+						data-poll-interval="<?php echo esc_attr( MINUTE_IN_SECONDS * 1000 ); ?>"
+						data-max-items-per-page="<?php echo esc_attr( get_option( 'page_comments' ) ? (int) get_option( 'comments_per_page' ) : 10000 ); ?>"
+					>
+					<?php
+					add_filter( 'navigation_markup_template', 'checathlon_filter_add_amp_live_list_pagination_attribute' );
+				}
+
 				the_comments_navigation( array(
 					'next_text' => esc_html__( 'Newer comments', 'checathlon' ) . checathlon_get_svg( array( 'icon' => 'arrow-circle-right' ) ),
 					'prev_text' => checathlon_get_svg( array( 'icon' => 'arrow-circle-left' ) ) . esc_html__( 'Older comments', 'checathlon' ),
 				) );
 			?>
 
-			<ol class="comment-list">
+			<ol class="comment-list"<?php echo checathlon_is_amp() ? ' items' : ''; ?>>
 				<?php
 					wp_list_comments( array(
 						'style'       => 'ol',
@@ -60,6 +72,16 @@ if ( post_password_required() ) {
 					'next_text' => esc_html__( 'Newer comments', 'checathlon' ) . checathlon_get_svg( array( 'icon' => 'arrow-circle-right' ) ),
 					'prev_text' => checathlon_get_svg( array( 'icon' => 'arrow-circle-left' ) ) . esc_html__( 'Older comments', 'checathlon' ),
 				) );
+
+				if ( checathlon_is_amp() ) {
+					remove_filter( 'navigation_markup_template', 'checathlon_filter_add_amp_live_list_pagination_attribute' );
+					?>
+						<div update>
+							<button class="button" on="tap:amp-live-comments-list-<?php the_ID(); ?>.update"><?php esc_html_e( 'New comment(s)', 'wp-rig' ); ?></button>
+						</div>
+					</amp-live-list>
+					<?php
+				}
 			
 			// If comments are closed and there are comments, let's leave a little note, shall we?
 			if ( ! comments_open() && get_comments_number() && post_type_supports( get_post_type(), 'comments' ) ) : ?>
