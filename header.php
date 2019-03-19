@@ -14,7 +14,7 @@ $body_classes = get_body_class();
 $html_class = ' class="no-js"';
 $body_class = ' class="' . implode( ' ', $body_classes ) . '"';
 if ( checathlon_is_amp() ) {
-	$html_class .= ' [class]="\'no-js\' + ( navMenuToggledOn ? \' disable-scroll\' : \'\' )"';
+	$html_class .= sprintf( ' [class]="%s"', esc_attr( "'no-js' + ( navMenuToggledOn ? ' disable-scroll' : ''" ) ) );
 	$body_class .= ' [class]="\'' . implode( ' ', $body_classes ) . '\' + ( navMenuToggledOn ? \' main-navigation-open\' : \'\' )"';
 }
 
