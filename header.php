@@ -9,8 +9,17 @@
  * @package Checathlon
  */
 
+$body_classes = get_body_class();
+
+$html_class = ' class="no-js"';
+$body_class = ' class="' . implode( ' ', $body_classes ) . '"';
+if ( checathlon_is_amp() ) {
+	$html_class .= sprintf( ' [class]="%s"', esc_attr( "'no-js' + ( navMenuToggledOn ? ' disable-scroll' : ''" ) ) );
+	$body_class .= ' [class]="\'' . implode( ' ', $body_classes ) . '\' + ( navMenuToggledOn ? \' main-navigation-open\' : \'\' )"';
+}
+
 ?><!DOCTYPE html>
-<html <?php language_attributes(); ?> class="no-js">
+<html <?php language_attributes(); echo $html_class; ?>>
 <head>
 <meta charset="<?php bloginfo( 'charset' ); ?>">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -20,7 +29,8 @@
 <?php wp_head(); ?>
 </head>
 
-<body <?php body_class(); ?>>
+<body <?php echo $body_class; ?>>
+<?php unset( $body_classes, $html_class, $body_class ); ?>
 <div id="page" class="site">
 	<a class="skip-link screen-reader-text" href="#content"><?php esc_html_e( 'Skip to content', 'checathlon' ); ?></a>
 

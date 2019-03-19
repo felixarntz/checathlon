@@ -97,6 +97,17 @@ function checathlon_setup() {
 	// Add support for Message Board Plugin.
 	add_theme_support( 'message-board' );
 
+	add_theme_support( 'amp', array(
+		'comments_live_list' => true,
+		'nav_menu_toggle'    => array(
+			'nav_container_id'           => 'site-navigation',
+			'nav_container_toggle_class' => 'toggled',
+			'menu_button_id'             => 'menu-toggle',
+			'menu_button_toggle_class'   => 'toggled',
+			'nav_menu_toggle_state_id'   => 'navMenuToggledOn',
+		),
+	) );
+
 	// Starter content.
 	$starter_content = array(
 		'widgets' => array(
@@ -311,6 +322,11 @@ add_action( 'widgets_init', 'checathlon_widgets_init' );
  * Adds a `js` class to the root `<html>` element when JavaScript is detected.
  */
 function checathlon_javascript_detection() {
+	// Do not print script if AMP.
+	if ( checathlon_is_amp() ) {
+		return;
+	}
+
 	echo "<script>(function(html){html.className = html.className.replace(/\bno-js\b/,'js')})(document.documentElement);</script>\n";
 }
 add_action( 'wp_head', 'checathlon_javascript_detection', 0 );
@@ -394,6 +410,11 @@ function checathlon_scripts() {
 	// Add theme styles.
 	wp_enqueue_style( 'checathlon-style', get_stylesheet_uri(), array(), is_child_theme() ? checathlon_theme_version() : checathlon_theme_version( $dir = 'template' ) );
 
+	// Do not enqueue scripts if in AMP.
+	if ( checathlon_is_amp() ) {
+		return;
+	}
+
 	// Add theme scripts.
 	wp_enqueue_script( 'checathlon-scripts', get_template_directory_uri() . '/assets/js/scripts' . $suffix . '.js', array(), '20160912', true );
 
@@ -408,6 +429,15 @@ function checathlon_scripts() {
 
 }
 add_action( 'wp_enqueue_scripts', 'checathlon_scripts' );
+
+/**
+ * Check whether the current page should be served as AMP content.
+ *
+ * @return bool True if AMP context, false otherwise.
+ */
+function checathlon_is_amp() {
+	return function_exists( 'is_amp_endpoint' ) && is_amp_endpoint();
+}
 
 /**
  * Implement the Custom Header feature.
